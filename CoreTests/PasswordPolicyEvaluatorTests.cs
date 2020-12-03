@@ -37,7 +37,7 @@ namespace CoreTests
             [Fact(Skip = "done")]
             public void Puzzle_2A()
             {
-                var inputs = PuzzleInputs.Puzzle2();
+                var inputs = PuzzleInputs.Puzzle2;
 
                 var okPasswords = new ConcurrentBag<int>();
                 
@@ -126,7 +126,7 @@ namespace CoreTests
             [Fact(Skip ="done")]
             public void Puzzle_2B()
             {
-                var inputs = PuzzleInputs.Puzzle2();
+                var inputs = PuzzleInputs.Puzzle2;
 
                 var okPasswords = new ConcurrentBag<int>();
                 

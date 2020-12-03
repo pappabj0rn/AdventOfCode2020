@@ -28,7 +28,7 @@ namespace CoreTests
             [Fact(Skip = "enable for answer")]
             public void Puzzle_1A()
             {
-                var input = PuzzleInputs.Puzzle1();
+                var input = PuzzleInputs.Puzzle1;
                 
                 var finder = new FactorFinder
                 {
@@ -66,7 +66,7 @@ namespace CoreTests
             [Fact(Skip = "enable for answer")]
             public void Puzzle_1B()
             {
-                var input = PuzzleInputs.Puzzle1();
+                var input = PuzzleInputs.Puzzle1;
                 
                 var finder = new FactorFinder
                 {
