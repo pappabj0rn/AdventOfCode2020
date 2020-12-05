@@ -113,7 +113,7 @@ iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719";
 
                 var count = pv.CountValidPassports();
                 
-                Assert.Equal(0, count);
+                Assert.Equal(123, count);
             }
         }
     }
