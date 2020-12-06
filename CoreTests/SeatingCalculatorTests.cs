@@ -31,7 +31,7 @@ namespace CoreTests
                 var highestInput = "";
                 
                 var calculator = new SeatingCalculator();
-                foreach (var input in PuzzleInputs.PUzzle5)
+                foreach (var input in PuzzleInputs.Puzzle5)
                 {
                     var result = calculator.CalculateSeatNo(input);
                     if (result.seatId > highest)
@@ -51,7 +51,7 @@ namespace CoreTests
                 var gap = 0;
                 
                 var calculator = new SeatingCalculator();
-                var calcs = PuzzleInputs.PUzzle5.Select(calculator.CalculateSeatNo).OrderBy(x => x.seatId);
+                var calcs = PuzzleInputs.Puzzle5.Select(calculator.CalculateSeatNo).OrderBy(x => x.seatId);
                 foreach (var calc in calcs)
                 {
                     if (calc.seatId == prev+2)
@@ -62,7 +62,7 @@ namespace CoreTests
                     prev = calc.seatId;
                 }
                 
-                Assert.Equal(0, gap);
+                Assert.Equal(678, gap);
             }
         }
     }
