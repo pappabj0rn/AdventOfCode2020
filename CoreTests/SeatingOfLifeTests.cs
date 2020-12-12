@@ -152,7 +152,7 @@ namespace CoreTests
                 Assert.Equal(26,occupiedCount);
             }
             
-            [Fact]
+            [Fact(Skip="Done")]
             public void Puzzle_11B()
             {
                 var sim = new SeatingOfLife
@@ -164,7 +164,7 @@ namespace CoreTests
                 while (sim.Simulate()) { }
 
                 var occupiedCount = sim.Field.SelectMany(x => x).Count(x => x == '#');
-                Assert.Equal(2338,occupiedCount);
+                Assert.Equal(2134,occupiedCount);
             }
         }
     }
