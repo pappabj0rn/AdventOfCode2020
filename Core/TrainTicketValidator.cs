@@ -9,24 +9,31 @@ namespace Core
     {
         public Field[] Fields { get; set; }
 
-        private IEnumerable<int> _validValues;
-
+        private IEnumerable<int> _invalidValues;
+        private int _min = int.MaxValue;
+        private int _max;
        
         public bool ValidateTicketValue(int ticketValue)
         {
-            if (_validValues is null)
+            if (_invalidValues is null)
                 FillValidValuesFromFieldRanges();
             
-            return _validValues.Contains(ticketValue);
+            return ticketValue >= _min && ticketValue <= _max && !_invalidValues.Contains(ticketValue);
         }
 
         private void FillValidValuesFromFieldRanges()
         {
-            _validValues = Fields
+            var validValues = Fields
                 .SelectMany(x => x.Ranges)
                 .SelectMany(x=>x.ToList())
                 .Distinct()
-                .OrderBy(x=>x);
+                .OrderBy(x=>x)
+                .ToList();
+            
+            _min = validValues.First();
+            _max = validValues.Last();
+            
+            _invalidValues = Enumerable.Range(_min, _max-_min+1).Except(validValues);
         }
 
         public void DetermineFieldOrder(List<int[]> validTickets)
@@ -36,17 +43,24 @@ namespace Core
             {
                 var i1 = i;
                 var col = validTickets.Select(t => t[i1]);
-                fieldCandidates.Add(Fields.Where(f => f.Allows(col)).ToArray());
+                fieldCandidates.Add(Fields.Where(f => col.All(f.Allows)).ToArray());
             }
 
-            while (fieldCandidates.Any(x=>x.Length > 1))
+            ReduceFieldCandidates(fieldCandidates);
+
+            Fields = fieldCandidates.SelectMany(x => x).ToArray();
+        }
+
+        private static void ReduceFieldCandidates(List<Field[]> fieldCandidates)
+        {
+            while (fieldCandidates.Any(x => x.Length > 1))
             {
                 var fixedFields = fieldCandidates
                     .Where(x => x.Length == 1)
-                    .SelectMany(x=>x)
+                    .SelectMany(x => x)
                     .ToList();
 
-                for (int i = 0; i < fieldCandidates.Count; i++)
+                for (var i = 0; i < fieldCandidates.Count; i++)
                 {
                     var curCandidates = fieldCandidates[i];
                     if (curCandidates.Length > 1
@@ -56,8 +70,6 @@ namespace Core
                     }
                 }
             }
-
-            Fields = fieldCandidates.SelectMany(x => x).ToArray();
         }
     }
 
@@ -67,16 +79,9 @@ namespace Core
         public string Name { get; set; }
         public Range[] Ranges { get; set; }
 
-        private IEnumerable<int> _validValues;
-
-        public bool Allows(IEnumerable<int> col)
+        public bool Allows(int val)
         {
-            _validValues ??= Ranges
-                .SelectMany(x => x.ToList())
-                .Distinct();
-
-            var validValues = _validValues;
-            return col.All(x => validValues.Contains(x));
+            return Ranges[0].Allows(val) || Ranges[1].Allows(val);
         }
     }
 
@@ -89,6 +94,11 @@ namespace Core
         {
             _start = start;
             _end = end;
+        }
+        
+        public bool Allows(int val)
+        {
+            return val >= _start && val <= _end;
         }
 
         public IEnumerator<int> GetEnumerator()
