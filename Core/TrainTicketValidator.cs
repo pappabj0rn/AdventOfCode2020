@@ -67,13 +67,15 @@ namespace Core
         public string Name { get; set; }
         public Range[] Ranges { get; set; }
 
+        private IEnumerable<int> _validValues;
+
         public bool Allows(IEnumerable<int> col)
         {
-            var validValues = Ranges
+            _validValues ??= Ranges
                 .SelectMany(x => x.ToList())
-                .Distinct()
-                .OrderBy(x => x);
+                .Distinct();
 
+            var validValues = _validValues;
             return col.All(x => validValues.Contains(x));
         }
     }
