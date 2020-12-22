@@ -20,19 +20,6 @@ namespace CoreTests
         }
         
         [Theory]
-        [InlineData("1-1", 0)]
-        [InlineData("1 - 1", 0)]
-        [InlineData("1 - 1 - 2", -2)]
-        public void Should_handle_subtraction(string expression, int expected)
-        {
-            var calc = new ConfigurableOperatorPrecedenceCalculator();
-
-            var result = calc.Evaluate(expression);
-
-            Assert.Equal(expected, result);
-        }
-        
-        [Theory]
         [InlineData("1*1", 1)]
         [InlineData("1 * 1", 1)]
         [InlineData("1 * 1 * 2", 2)]
@@ -80,6 +67,40 @@ namespace CoreTests
             var acc = (from expression in PuzzleInput let calc = new ConfigurableOperatorPrecedenceCalculator() select calc.Evaluate(expression)).Sum();
 
             Assert.Equal(4696493914530,acc);
+        }
+        
+        [Theory]
+        [InlineData("1 + (2 * 3) + (4 * (5 + 6))", 51)]
+        [InlineData("2 * 3 + (4 * 5)", 46)]
+        [InlineData("5 + (8 * 3 + 9 + 3 * 4 * 3)", 1445)]
+        [InlineData("5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))", 669060)]
+        [InlineData("((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2", 23340)]
+        public void Examples_B(string expression, int expected)
+        {
+            var calc = new ConfigurableOperatorPrecedenceCalculator
+            {
+                ObserveOperatorPrecedence = true
+            };
+
+            var result = calc.Evaluate(expression);
+
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
+        public void Puzzle_18B()
+        {
+            var calc = new ConfigurableOperatorPrecedenceCalculator
+            {
+                ObserveOperatorPrecedence = true
+            };
+            long acc = 0;
+            foreach (var expression in PuzzleInput)
+            {
+                acc += calc.Evaluate(expression);
+            }
+
+            Assert.Equal(0,acc);
         }
 
         private static readonly string[] PuzzleInput = new[]
