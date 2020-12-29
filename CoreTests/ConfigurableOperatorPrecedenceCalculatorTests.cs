@@ -87,7 +87,7 @@ namespace CoreTests
             Assert.Equal(expected, result);
         }
         
-        [Fact]
+        [Fact(Skip = "done")]
         public void Puzzle_18B()
         {
             var calc = new ConfigurableOperatorPrecedenceCalculator
@@ -100,11 +100,10 @@ namespace CoreTests
                 acc += calc.Evaluate(expression);
             }
 
-            Assert.Equal(0,acc);
+            Assert.Equal(362880372308125,acc);
         }
 
-        private static readonly string[] PuzzleInput = new[]
-        {
+        private static readonly string[] PuzzleInput = {
             "5 + 9 + 3 + ((2 + 8 + 2) + 8 + 9 * (4 * 2 * 5) + 6) * 4",
             "7 + ((9 * 5 + 9 + 2 * 7 * 6) + 3 + (3 + 2 * 8 + 6) * 6 + 4 * 8) + 5",
             "9 + (6 * (4 * 8 + 2 * 4 + 8 + 6) * 4 * 5 * (7 * 8 * 9 + 3 * 4) + 8) + ((2 + 7 * 5 + 8) * 5 * (3 + 8) + 5 + 8 * (7 + 8)) + (2 + 2 + 5 + 7 + 7)",
