@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Core;
 using Xunit;
 
@@ -36,6 +37,65 @@ namespace CoreTests
             Assert.Equal(687, cc.RoundsPlayed);
             Assert.Equal(33098, cc.P1Score);
             Assert.Equal(0, cc.P2Score);
+        }
+
+        [Fact]
+        public void Compare_array_test()
+        {
+            var a1 = new[] {1, 2};
+            var a2 = new[] {1, 2};
+            
+            Assert.Equal(a1, a2);
+            Assert.True(a1.SequenceEqual(a2));
+        }
+        
+        [Fact]
+        public void Example_2()
+        {
+            var cc = new CrabCombat
+            {
+                P1 = new Queue<int>( new [] { 9, 2, 6, 3, 1 }),
+                P2 = new Queue<int>( new [] { 5, 8, 4, 7, 10 })
+            };
+
+            cc.BattleRecursive(cc.P1, cc.P2);
+            
+            Assert.Equal(0, cc.P1Score);
+            Assert.Equal(291, cc.P2Score);
+        }
+        
+        [Fact]
+        public void Example_3()
+        {
+            var cc = new CrabCombat
+            {
+                P1 = new Queue<int>( new [] { 43,19 }),
+                P2 = new Queue<int>( new [] { 2,29,14 })
+            };
+
+            cc.BattleRecursive(cc.P1, cc.P2);
+            
+            Assert.Equal(105, cc.P1Score);
+            Assert.Equal(0, cc.P2Score);
+        }
+        
+        [Fact
+            //(Skip = "wip")
+        ]
+        public void Puzzle_22B()
+        {
+            var cc = new CrabCombat
+            {
+                P1 = new Queue<int>(PuzzleP1),
+                P2 = new Queue<int>(PuzzleP2)
+            };
+
+            cc.BattleRecursive(cc.P1, cc.P2);
+            
+            Assert.True(cc.P1Score>11908,"too low");
+            Assert.True(cc.P1Score>15110,"too low");
+            Assert.Equal(0, cc.P1Score);
+            Assert.Equal(291, cc.P2Score);
         }
         
         private static readonly int[] PuzzleP1 = {
