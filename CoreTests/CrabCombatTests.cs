@@ -79,9 +79,7 @@ namespace CoreTests
             Assert.Equal(0, cc.P2Score);
         }
         
-        [Fact
-            //(Skip = "wip")
-        ]
+        [Fact(Skip = "done")]
         public void Puzzle_22B()
         {
             var cc = new CrabCombat
@@ -94,8 +92,8 @@ namespace CoreTests
             
             Assert.True(cc.P1Score>11908,"too low");
             Assert.True(cc.P1Score>15110,"too low");
-            Assert.Equal(0, cc.P1Score);
-            Assert.Equal(291, cc.P2Score);
+            Assert.Equal(35055, cc.P1Score);
+            Assert.Equal(0, cc.P2Score);
         }
         
         private static readonly int[] PuzzleP1 = {
