@@ -1,72 +1,119 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Core
 {
     public class CrabCups
     {
-        public List<int> Circle { get; }
+        private readonly LinkedList<int> _circle;
+        private int _max = 0;
+
+        private Stopwatch _sw = new Stopwatch();
+        private LinkedListNode<int> _curentNode;
+        private Dictionary<int, LinkedListNode<int>> _nodeIndex 
+            = new Dictionary<int, LinkedListNode<int>>();
 
         public CrabCups(IEnumerable<int> circle)
         {
-            Circle = circle.ToList();
-        }
+            _circle = new LinkedList<int>(circle);
+            _curentNode = _circle.First;
 
-        private int curCupIndex = 0;
+            var next = _curentNode;
+            while (next != null)
+            {
+                _nodeIndex.Add(next.Value, next);
+                next = next.Next;
+            }
+
+            _max = _circle.Max();
+        }
         
         public void Move()
         {
-            var curCup = Circle[curCupIndex];
-            var movingCups = Circle
-                .Skip(curCupIndex+1)
-                .Take(3)
-                .ToList();
-            if (movingCups.Count < 3)
+            var movingCups = GetMovingCups();
+
+            var targetCup = CalculateTargetCup(movingCups);
+
+            //var targetNode = _circle.Find(targetCup);
+            var targetNode = _nodeIndex[targetCup];
+
+            foreach (var movingCup in movingCups.Reverse())
             {
-                movingCups.AddRange(Circle.Take(3 - movingCups.Count));
-            }
-            
-            foreach (var movingCup in movingCups)
-            {
-                Circle.Remove(movingCup);
+                _circle.AddAfter(targetNode, movingCup);
             }
 
-            var targetIndex = -1;
-            var i = 1;
-            while (targetIndex == -1)
-            {
-                var targetLabel = curCup - i;
-                i++;
-                
-                if (targetLabel < Circle.Min())
-                {
-                    targetLabel = Circle.Max();
-                }
-                
-                targetIndex =  Circle.IndexOf(targetLabel);
-            }
-            
-            Circle.InsertRange(targetIndex+1, movingCups);
-            curCupIndex = Circle.IndexOf(curCup);
-            curCupIndex++;
-            curCupIndex %= Circle.Count;
+            _curentNode = _curentNode.NextOrFirst();
         }
 
-        public List<int> GetOrderFromOne()
+        private int CalculateTargetCup(LinkedListNode<int>[] movingCups)
         {
-            var list = new List<int>();
-            
-            var startIndex = Circle.IndexOf(1);
-            var i = startIndex;
-            
-            do
-            {
-                i++;
-                i %= Circle.Count;
-                list.Add(Circle[i]);
-            } while (i != startIndex);
+            var targetCup = _curentNode.Value - 1;
 
-            return list.Take(list.Count-1).ToList();
+            var rerun = true;
+            while (rerun)
+            {
+                rerun = false;
+
+                if (movingCups.Select(x => x.Value).Contains(targetCup))
+                {
+                    targetCup--;
+                    rerun = true;
+                }
+
+                if (targetCup >= 1) continue;
+
+                targetCup = _max;
+                rerun = true;
+            }
+
+            return targetCup;
+        }
+
+        private LinkedListNode<int>[] GetMovingCups()
+        {
+            var firstMovingNode = _curentNode.NextOrFirst();
+            var secondMovingNode = firstMovingNode.NextOrFirst();
+            var thirdMovingNode = secondMovingNode.NextOrFirst();
+            
+            _circle.Remove(firstMovingNode);
+            _circle.Remove(secondMovingNode);
+            _circle.Remove(thirdMovingNode);
+            
+            return new[]
+            {
+                firstMovingNode,
+                secondMovingNode,
+                thirdMovingNode
+            };
+        }
+
+        public IEnumerable<int> GetOrderFromOne()
+        {
+            var startNode = _circle
+                .Find(1);
+
+            var first = true;
+            
+            while (first || startNode.NextOrFirst().Value != 1)
+            {
+                first = false;
+                startNode = startNode.NextOrFirst();
+                yield return startNode.Value;
+            }
+        }
+    }
+    
+    static class CircularLinkedList {
+        public static LinkedListNode<T> NextOrFirst<T>(this LinkedListNode<T> current)
+        {
+            return current.Next ?? current.List.First;
+        }
+
+        public static LinkedListNode<T> PreviousOrLast<T>(this LinkedListNode<T> current)
+        {
+            return current.Previous ?? current.List.Last;
         }
     }
 }
